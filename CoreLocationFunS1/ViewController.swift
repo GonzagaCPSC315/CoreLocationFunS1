@@ -62,8 +62,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // 1. requestLocation(): one time update of the user's location
         // 2. startUpdatingLocation(): continuous updates based on the desiredAccuracy
         // for #2, don't forget to call stopUpdatingLocation() when you're done with location updates
-        locationManager.requestLocation()
+        //locationManager.requestLocation()
         // we need delegate callback methods!!
+        locationManager.startUpdatingLocation()
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -74,6 +75,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // update the labels
         latitudeLabel.text = "Latitude: \(location.coordinate.latitude)"
         longitudeLabel.text = "Longitude: \(location.coordinate.longitude)"
+        // get the name of the current location using a geocoder
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { (placeMarksOptional, errorOptional) in
+            if let placeMarks = placeMarksOptional, placeMarks.count > 0 {
+                let placeMark = placeMarks[0]
+                if let name = placeMark.name {
+                    self.nameLabel.text = "Name: \(name)"
+                }
+            }
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
